@@ -51,7 +51,8 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <optional>true</optional>
+      <version>1.18.28</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -89,16 +90,27 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <!-- 添加以下配置 -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal> <!-- 关键：重新打包为可执行JAR -->
+            </goals>
+          </execution>
+        </executions>
+
       </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.10.1</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <release>17</release>
           <encoding>UTF-8</encoding>
+          <!-- Disable annotation processing to avoid Lombok javac-API incompatibility on this environment. -->
+          <proc>none</proc>
         </configuration>
       </plugin>
 
