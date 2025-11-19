@@ -16,6 +16,7 @@ com\example\poverty\model\Province.class
 com\example\poverty\controller\DashboardController.class
 com\example\poverty\repository\SysUserRepository.class
 com\example\poverty\repository\AlertRuleRepository.class
+com\example\poverty\controller\UserController$SysUserDTO.class
 com\example\poverty\model\SysUser.class
 com\example\poverty\repository\PovertyCountyRepository.class
 com\example\poverty\repository\RoleRepository.class

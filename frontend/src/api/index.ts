@@ -79,6 +79,8 @@ export const deleteUserById = (id: number) => api.delete(`/users/${id}`);
 
 export const getUsers = () => api.get('/users');
 
+export const getCurrentUser = () => api.get('/users/current');
+
 // ----------------------
 // 获取图表数据接口
 // ----------------------
@@ -102,4 +104,5 @@ export default {
     getUsers,
     getChartsData,
     getAnalysisData,
+    getCurrentUser
 };
