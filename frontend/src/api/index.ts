@@ -10,10 +10,14 @@ const api: AxiosInstance = axios.create({
 // 请求拦截器：每次请求自动带 JWT
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
-    if (token && config.headers) {
+    if (token) {
+        // 确保 headers 存在
+        config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
+}, (error) => {
+    return Promise.reject(error);
 });
 
 // 响应拦截器：401 提示重新登录
@@ -22,8 +26,9 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             console.warn('未授权或 token 过期，请重新登录');
-            // 可选：跳转到登录页
-            // window.location.href = '/login';
+            localStorage.removeItem('token');
+            // 跳转到登录页
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }
@@ -43,9 +48,24 @@ export const login = (username: string, password: string) => {
     });
 };
 
+export const loginUser = (credentials: { username: string; password: string }) => api.post('/auth/login', credentials);
+
+export const registerUser = (userData: {
+  username: string;
+  password: string;
+  email: string;
+  role: string;
+  fullname?: string;
+}) => {
+  return api.post('/auth/register', userData);
+};
+
 // ----------------------
 // 其他接口封装
 // ----------------------
+
+
+
 export const getSummary = (year?: number) =>
     api.get(`/indicators/summary${year ? '?year=' + year : ''}`);
 
@@ -71,6 +91,22 @@ export const getRules = () => api.get('/alerts/rules');
 
 export const createRule = (r: any) => api.post('/alerts/rules', r);
 
+export const resolveAlertById = (id: number) => api.post(`/alerts/${id}/resolve`);
+
+export const deleteUserById = (id: number) => api.delete(`/users/${id}`);
+
+export const getUsers = () => api.get('/users');
+
+export const getCurrentUser = () => api.get('/users/current');
+
+// ----------------------
+// 获取图表数据接口
+// ----------------------
+export const getChartsData = (year?: number) =>
+    api.get(`/dashboard/charts${year ? '?year=' + year : ''}`);
+
+export const getAnalysisData = (year: number) => api.get(`/indicators/charts${year ? '?year=' + year : ''}`);
+
 // 默认导出一个对象，方便在 Vue 中直接 import api from '@/api';
 export default {
     login,
@@ -81,4 +117,10 @@ export default {
     scanAlerts,
     getRules,
     createRule,
+    resolveAlertById,
+    deleteUserById,
+    getUsers,
+    getChartsData,
+    getAnalysisData,
+    getCurrentUser
 };

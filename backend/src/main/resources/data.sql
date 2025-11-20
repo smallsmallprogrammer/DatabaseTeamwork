@@ -1,3 +1,4 @@
+
 INSERT INTO role (role_name) VALUES ('public'),('analyst'),('admin');
 
 INSERT INTO province (province_name) VALUES ('Province A'),('Province B');

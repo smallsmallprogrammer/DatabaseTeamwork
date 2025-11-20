@@ -1,15 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Dashboard from '@/pages/Dashboard.vue';
-import CountyDetail from '@/pages/CountyDetail.vue';
+import Home from '@/pages/Home.vue';
+import County from '@/pages/County.vue';
+import Analysis from '@/pages/Analysis.vue';
 import Alerts from '@/pages/Alerts.vue';
 import Login from '@/pages/Login.vue';
-
+import Users from '@/pages/Users.vue';
+//import Dashboard from '@/pages/Dashboard.vue';
+import Profile from '@/pages/Profile.vue';
+import Register from '@/pages/Register.vue';
 const routes = [
-  { path: '/', redirect: '/dashboard' },
-  { path: '/dashboard', component: Dashboard },
-  { path: '/counties/:id', component: CountyDetail },
-  { path: '/alerts', component: Alerts },
-  { path: '/login', component: Login },
+  { path: '/home', component: Home, meta: { requiresAuth: false } },
+  { path: '/county', component: County, meta: { requiresAuth: true } },
+  { path: '/analysis', component: Analysis, meta: { requiresAuth: true } },
+  { path: '/alerts', component: Alerts, meta: { requiresAuth: true } },
+  { path: '/login', component: Login, meta: { requiresAuth: false } },
+  { path: '/users', component: Users, meta: { requiresAuth: true, requiresAdmin: true } },
+  //{ path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+  { path: '/register', component: Register, meta: { requiresAuth: false } },
+  { path: '/', redirect: '/home' },
 ];
 
 const router = createRouter({
@@ -17,14 +26,32 @@ const router = createRouter({
   routes,
 });
 
-// 全局守卫：未登录跳转登录页
+export default router;
+
+// 路由守卫
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
-  if (to.path !== '/login' && !token) {
+  
+  // 检查是否需要认证
+  if (to.meta.requiresAuth && !token) {
     next('/login');
-  } else {
-    next();
+    return;
   }
+  
+  // 检查是否需要管理员权限
+  if (to.meta.requiresAdmin && token) {
+    // 这里可以添加管理员权限检查逻辑
+    // 暂时允许所有登录用户访问
+    next();
+    return;
+  }
+  
+  // 已登录用户访问登录/注册页时跳转到首页
+  if ((to.path === '/login' || to.path === '/register') && token) {
+    next('/home');
+    return;
+  }
+  
+  next();
 });
 
-export default router;
